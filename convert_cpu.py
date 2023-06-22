@@ -1,10 +1,17 @@
-import pandas as pd
+import time
 import requests
+from multiprocessing import Pool, cpu_count
+import argparse
+
+import pandas as pd
 import boto3
 from botocore.exceptions import ClientError
 
-from multiprocessing import Pool, cpu_count
-import time
+# use terminal input as csv file
+parser = argparse.ArgumentParser(description='Process a CSV file.')
+parser.add_argument('csv_file', type=str, help='CSV file to process')
+args = parser.parse_args()
+csv_file = args.csv_file
 
 def create_bucket(s3, bucket_name, retries=3, delay=10):
     for attempt in range(retries):
@@ -23,7 +30,7 @@ def create_bucket(s3, bucket_name, retries=3, delay=10):
     raise Exception(f'Bucket creation failed after {retries} attempts.')
 
 s3 = boto3.client('s3')
-df = pd.read_csv('JRR_Products_06_19_23.csv')
+df = pd.read_csv(args.csv_file)
 cc = len(df.index)
 
 # bucket name for testing 
