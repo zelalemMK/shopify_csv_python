@@ -1,0 +1,5 @@
+pre-output/
+*.csv
+.DS_Store
+venv/
+.idea/
