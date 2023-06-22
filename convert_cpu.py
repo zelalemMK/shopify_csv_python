@@ -1,25 +1,45 @@
 import pandas as pd
-import boto3
 import requests
+import boto3
+from botocore.exceptions import ClientError
+
 from multiprocessing import Pool, cpu_count
+import time
+
+def create_bucket(s3, bucket_name, retries=3, delay=10):
+    for attempt in range(retries):
+        try:
+            s3.create_bucket(Bucket=bucket_name)
+            return
+        except ClientError as e:
+            if e.response['Error']['Code'] == 'OperationAborted':
+                print(f'Bucket creation failed due to a conflicting operation. Retrying in {delay} seconds...')
+                time.sleep(delay)
+            elif e.response['Error']['Code'] in ('BucketAlreadyOwnedByYou', 'BucketAlreadyExists'):
+                print(f'Bucket {bucket_name} already exists. No action needed.')
+                return
+            else:
+                raise e
+    raise Exception(f'Bucket creation failed after {retries} attempts.')
 
 s3 = boto3.client('s3')
 df = pd.read_csv('JRR_Products_06_19_23.csv')
 cc = len(df.index)
 
 # bucket name for testing 
-bucket_name = "shopify-product-imgs"
+bucket_name = "shopify-product-img-delete"
+
 
 def uploadimg(params):
     url, imgname = params
     imgrequest = requests.get(url, stream=True)
     imgobject = imgrequest.raw
-    s3.create_bucket(Bucket=bucket_name)
     imgdata = imgobject.read()
     s3.put_object(Bucket=bucket_name, Key=imgname, Body=imgdata)
     print("current img: " + imgname)
 
 def main():
+    create_bucket(s3, bucket_name)
     sku = []
     price = []
     title = []
