@@ -16,4 +16,4 @@ This repository contains a Python script designed to process and handle large CS
 To run the script, use the following command in your terminal:
 
 ```bash
-python main.py --file_path [your_file_path_here]
+sh run10.sh /path/to/dir
