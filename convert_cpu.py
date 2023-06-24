@@ -29,6 +29,12 @@ def create_bucket(s3, bucket_name, retries=3, delay=10):
                 raise e
     raise Exception(f'Bucket creation failed after {retries} attempts.')
 
+def split_dataframe(df, chunk_size=2000):
+        num_chunks = len(df) // chunk_size
+        if len(df) % chunk_size:
+            num_chunks += 1
+        return (df[i*chunk_size:(i+1)*chunk_size] for i in range(num_chunks))
+
 s3 = boto3.client('s3')
 df = pd.read_csv(args.csv_file)
 cc = len(df.index)
@@ -125,12 +131,6 @@ def main():
         'Compare At Price / International': [""] * cc,
         'Status': ["active"]*cc,
         })
-
-    def split_dataframe(df, chunk_size=2000):
-        num_chunks = len(df) // chunk_size
-        if len(df) % chunk_size:
-            num_chunks += 1
-        return (df[i*chunk_size:(i+1)*chunk_size] for i in range(num_chunks))
 
     output_path = '/Users/zola/Downloads/shopifycsv'
     for i, chunk in enumerate(split_dataframe(output)):

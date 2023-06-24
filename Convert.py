@@ -37,6 +37,8 @@ for i in range(cc):
     imgname = str(df.iloc[i, 22])
     imgurltmp = ("https://www.jrrshop.com/media/catalog/product" + (df.iloc[i, 22]))
     uploadimg(imgurltmp,imgname)
+
+    
 output = pd.DataFrame(
     {'Handle': sku,
     'Title': title,
