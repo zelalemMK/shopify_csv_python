@@ -7,6 +7,17 @@ import pandas as pd
 import boto3
 from botocore.exceptions import ClientError
 
+"""
+functions to create
+1. read file name from terminal. return a dataframe from the csv file.
+2. create bucket if it doesn't exist
+3. upload images to s3 bucket
+
+reorgnize file, add more comments
+
+"""
+
+
 # use terminal input as csv file
 parser = argparse.ArgumentParser(description='Process a CSV file.')
 parser.add_argument('csv_file', type=str, help='CSV file to process')
